@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surface Damage Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .upload-section {
+            border: 2px solid #ff0000;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: #0a0a0a;
+        }
+
+        .upload-section h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-transform: uppercase;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            background-color: #000000;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .file-input-button:hover {
+            background-color: #ff0000;
+            color: #000000;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ff3333;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .run-button {
+            background-color: #000000;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .run-button:hover {
+            background-color: #ff0000;
+            color: #000000;
+        }
+
+        .run-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .images-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .image-box {
+            border: 2px solid #ff0000;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .image-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-transform: uppercase;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ff0000;
+        }
+
+        .report {
+            border: 2px solid #ff0000;
+            padding: 20px;
+            background-color: #0a0a0a;
+        }
+
+        .report h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-transform: uppercase;
+        }
+
+        .report-item {
+            margin: 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #330000;
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-label {
+            font-weight: bold;
+        }
+
+        .report-value {
+            color: #ff3333;
+        }
+
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .error {
+            border: 2px solid #ff0000;
+            padding: 15px;
+            background-color: #330000;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Surface Damage Detection</h1>
+            <p>Classical Image Processing System</p>
+        </div>
+
+        <div class="upload-section">
+            <h2>Upload Image</h2>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" class="file-input" accept="image/*" onchange="handleFileSelect()">
+                <label for="fileInput" class="file-input-button">Choose Image</label>
+            </div>
+            <div class="file-name" id="fileName">No file selected</div>
+        </div>
+
+        <div class="controls">
+            <button class="run-button" id="runButton" onclick="runDetection()" disabled>Run Detection</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>Processing image... Please wait.</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="results" id="results">
+            <div class="images-container">
+                <div class="image-box">
+                    <h3>Input Image</h3>
+                    <img id="inputImage" src="" alt="Input Image">
+                </div>
+                <div class="image-box">
+                    <h3>Damage Detection Result</h3>
+                    <img id="outputImage" src="" alt="Damage Detection Result">
+                </div>
+            </div>
+
+            <div class="report">
+                <h3>Quality Report</h3>
+                <div class="report-item">
+                    <span class="report-label">Damage Detected:</span>
+                    <span class="report-value" id="damageDetected">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="report-label">Damage Area (%):</span>
+                    <span class="report-value" id="damageArea">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="report-label">Quality Status:</span>
+                    <span class="report-value" id="qualityStatus">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="report-label">Decision Basis:</span>
+                    <span class="report-value">Edge discontinuity and damage area threshold</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fileUploaded = false;
+
+        function handleFileSelect() {
+            const fileInput = document.getElementById('fileInput');
+            const fileName = document.getElementById('fileName');
+            const runButton = document.getElementById('runButton');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileName.textContent = `Selected: ${file.name}`;
+                
+                // Upload the file
+                uploadFile(file);
+            } else {
+                fileName.textContent = 'No file selected';
+                fileUploaded = false;
+                runButton.disabled = true;
+            }
+        }
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    fileUploaded = true;
+                    document.getElementById('runButton').disabled = false;
+                    document.getElementById('fileName').textContent = `Uploaded: ${file.name}`;
+                } else {
+                    alert('Upload failed: ' + data.error);
+                    fileUploaded = false;
+                    document.getElementById('runButton').disabled = true;
+                }
+            } catch (err) {
+                alert('Upload error: ' + err.message);
+                fileUploaded = false;
+                document.getElementById('runButton').disabled = true;
+            }
+        }
+
+        async function runDetection() {
+            if (!fileUploaded) {
+                alert('Please upload an image first');
+                return;
+            }
+
+            const button = document.getElementById('runButton');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+            
+            // Reset UI
+            button.disabled = true;
+            loading.classList.add('show');
+            error.classList.remove('show');
+            results.classList.remove('show');
+            
+            try {
+                const response = await fetch('/run_detection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update images
+                    document.getElementById('inputImage').src = '/product.jpg?' + Date.now();
+                    document.getElementById('outputImage').src = '/damage_detected.jpg?' + Date.now();
+                    
+                    // Update report
+                    document.getElementById('damageDetected').textContent = data.report.damage_detected;
+                    document.getElementById('damageArea').textContent = data.report.damage_area;
+                    document.getElementById('qualityStatus').textContent = data.report.quality_status;
+                    
+                    // Show results
+                    results.classList.add('show');
+                } else {
+                    error.textContent = 'Error: ' + data.error;
+                    error.classList.add('show');
+                }
+            } catch (err) {
+                error.textContent = 'Network error: ' + err.message;
+                error.classList.add('show');
+            } finally {
+                button.disabled = false;
+                loading.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>
