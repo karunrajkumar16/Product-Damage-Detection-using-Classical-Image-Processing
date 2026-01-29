@@ -30,11 +30,24 @@ IP/
         └── index.html
 
 
-SETUP & RUN
+Setup & Run
+
+Step 1: Clone the repository
 git clone https://github.com/karunrajkumar16/Product-Damage-Detection-using-Classical-Image-Processing.git
+
+Step 2: Move into the project directory
 cd Product-Damage-Detection-using-Classical-Image-Processing
+
+Step 3: Install required dependencies
 pip install -r requirements.txt
+
+(This installs all required Python libraries listed in requirements.txt)
+
+Step 4: Run the application
 python project/app.py
+
+Open your browser and visit:
+http://127.0.0.1:5000/
 
 
 Open your browser and visit:
