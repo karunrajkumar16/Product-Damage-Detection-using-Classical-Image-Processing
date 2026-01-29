@@ -31,17 +31,10 @@ IP/
 
 
 SETUP & RUN
-1. Clone the repository
-   git clone https://github.com/karunrajkumar16/Product-Damage-Detection-using-Classical-Image-Processing.git
-
-2. Navigate to the project directory
-   cd Product-Damage-Detection-using-Classical-Image-Processing
-
-3. Install dependencies
-   pip install -r requirements.txt
-
-4. Run the application
-   python project/app.py
+git clone https://github.com/karunrajkumar16/Product-Damage-Detection-using-Classical-Image-Processing.git
+cd Product-Damage-Detection-using-Classical-Image-Processing
+pip install -r requirements.txt
+python project/app.py
 
 
 Open your browser and visit:
