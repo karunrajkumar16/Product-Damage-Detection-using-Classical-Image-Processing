@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 <b>Step 4: Run the application</b>
 <pre style="background:#f4f4f4; padding:10px; border-radius:5px;">
-python project/app.py
+python app.py
 </pre>
 
 <p>
